@@ -2,30 +2,47 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Gestor de Projetos</title>
+  <title>Gestor Pessoal de Projetos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>📁 Gestor de Projetos</h1>
+<h1>📊 Gestor de Projetos</h1>
 
 <section>
-  <h2>Novo Projeto</h2>
-  <input id="nome" placeholder="Nome do projeto">
+  <h2>➕ Novo Projeto</h2>
+  <input id="nome" placeholder="Projeto">
   <input id="cliente" placeholder="Cliente">
   <input id="status" placeholder="Status">
   <input id="valor" type="number" placeholder="Valor">
-  <button onclick="adicionarProjeto()">Adicionar</button>
+  <button onclick="addProjeto()">Adicionar Projeto</button>
 </section>
 
 <section>
-  <h2>Projetos</h2>
+  <h2>📁 Projetos</h2>
   <ul id="listaProjetos"></ul>
 </section>
 
 <section>
+  <h2>⏳ Pendências</h2>
+  <input id="pendenciaTexto" placeholder="Descrição">
+  <select id="pendenciaProjeto"></select>
+  <button onclick="addPendencia()">Adicionar Pendência</button>
+  <ul id="listaPendencias"></ul>
+</section>
+
+<section>
+  <h2>🗓️ Reuniões</h2>
+  <input id="reuniaoData" type="date">
+  <input id="reuniaoHora" type="time">
+  <input id="reuniaoObs" placeholder="Observação">
+  <button onclick="addReuniao()">Adicionar Reunião</button>
+  <ul id="listaReunioes"></ul>
+</section>
+
+<section>
   <h2>💰 Financeiro</h2>
-  <button onclick="calcularTotal()">Calcular Total Recebido</button>
+  <button onclick="calcularTotal()">Somar Entradas</button>
   <p id="total"></p>
 </section>
 
