@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestor de Projetos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📁 Gestor de Projetos</h1>
+
+<section>
+  <h2>Novo Projeto</h2>
+  <input id="nome" placeholder="Nome do projeto">
+  <input id="cliente" placeholder="Cliente">
+  <input id="status" placeholder="Status">
+  <input id="valor" type="number" placeholder="Valor">
+  <button onclick="adicionarProjeto()">Adicionar</button>
+</section>
+
+<section>
+  <h2>Projetos</h2>
+  <ul id="listaProjetos"></ul>
+</section>
+
+<section>
+  <h2>💰 Financeiro</h2>
+  <button onclick="calcularTotal()">Calcular Total Recebido</button>
+  <p id="total"></p>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
