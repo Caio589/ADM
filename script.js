@@ -2,7 +2,9 @@ let projetos = JSON.parse(localStorage.getItem("projetos")) || [];
 let pendencias = JSON.parse(localStorage.getItem("pendencias")) || [];
 let reunioes = JSON.parse(localStorage.getItem("reunioes")) || [];
 
-// salvar tudo no localStorage
+let projetoEditandoId = null;
+
+// ================== SALVAR ==================
 function salvar() {
   localStorage.setItem("projetos", JSON.stringify(projetos));
   localStorage.setItem("pendencias", JSON.stringify(pendencias));
@@ -12,27 +14,56 @@ function salvar() {
 // ================== PROJETOS ==================
 function addProjeto() {
   if (!nome.value || !cliente.value || !status.value || !valor.value) {
-    alert("Preencha todos os campos do projeto");
+    alert("Preencha todos os campos");
     return;
   }
 
-  projetos.push({
-    id: Date.now(),
-    nome: nome.value,
-    cliente: cliente.value,
-    status: status.value,
-    valor: Number(valor.value),
-    pago: false
-  });
+  // 🔹 SE ESTIVER EDITANDO
+  if (projetoEditandoId) {
+    const p = projetos.find(p => p.id === projetoEditandoId);
+    p.nome = nome.value;
+    p.cliente = cliente.value;
+    p.status = status.value;
+    p.valor = Number(valor.value);
+
+    projetoEditandoId = null;
+  } 
+  // 🔹 NOVO PROJETO
+  else {
+    projetos.push({
+      id: Date.now(),
+      nome: nome.value,
+      cliente: cliente.value,
+      status: status.value,
+      valor: Number(valor.value),
+      pago: false
+    });
+  }
 
   salvar();
   listarTudo();
+  limparCampos();
+}
 
-  // 🔹 LIMPAR CAMPOS AUTOMATICAMENTE
-  nome.value = "";
-  cliente.value = "";
-  status.value = "";
-  valor.value = "";
+function editarProjeto(id) {
+  const p = projetos.find(p => p.id === id);
+  if (!p) return;
+
+  nome.value = p.nome;
+  cliente.value = p.cliente;
+  status.value = p.status;
+  valor.value = p.valor;
+
+  projetoEditandoId = id;
+}
+
+function alternarPago(id) {
+  const p = projetos.find(p => p.id === id);
+  if (!p) return;
+
+  p.pago = !p.pago;
+  salvar();
+  listarProjetos();
 }
 
 function listarProjetos() {
@@ -43,8 +74,12 @@ function listarProjetos() {
     listaProjetos.innerHTML += `
       <li>
         <strong>${p.nome}</strong> | ${p.cliente} | ${p.status} | R$ ${p.valor}
-        | Pago: ${p.pago ? "Sim" : "Não"}
-        <button onclick="pagar(${p.id})">✔</button>
+        | <b>${p.pago ? "PAGO" : "NÃO PAGO"}</b>
+        <br>
+        <button onclick="editarProjeto(${p.id})">✏️ Editar</button>
+        <button onclick="alternarPago(${p.id})">
+          ${p.pago ? "Marcar Não Pago" : "Marcar Pago"}
+        </button>
       </li>
     `;
 
@@ -54,21 +89,16 @@ function listarProjetos() {
   });
 }
 
-function pagar(id) {
-  const projeto = projetos.find(p => p.id === id);
-  if (projeto) {
-    projeto.pago = true;
-    salvar();
-    listarTudo();
-  }
+function limparCampos() {
+  nome.value = "";
+  cliente.value = "";
+  status.value = "";
+  valor.value = "";
 }
 
 // ================== PENDÊNCIAS ==================
 function addPendencia() {
-  if (!pendenciaTexto.value) {
-    alert("Informe a pendência");
-    return;
-  }
+  if (!pendenciaTexto.value) return;
 
   pendencias.push({
     id: Date.now(),
@@ -78,10 +108,8 @@ function addPendencia() {
   });
 
   salvar();
-  listarPendencias();
-
-  // limpar campo
   pendenciaTexto.value = "";
+  listarPendencias();
 }
 
 function listarPendencias() {
@@ -89,15 +117,15 @@ function listarPendencias() {
   pendencias.forEach(p => {
     listaPendencias.innerHTML += `
       <li>
-        ${p.texto} | Concluída: ${p.feita ? "Sim" : "Não"}
-        <button onclick="concluir(${p.id})">✔</button>
+        ${p.texto} | ${p.feita ? "Concluída" : "Pendente"}
+        <button onclick="concluirPendencia(${p.id})">✔</button>
       </li>
     `;
   });
 }
 
-function concluir(id) {
-  const p = pendencias.find(x => x.id === id);
+function concluirPendencia(id) {
+  const p = pendencias.find(p => p.id === id);
   if (p) {
     p.feita = true;
     salvar();
@@ -107,10 +135,7 @@ function concluir(id) {
 
 // ================== REUNIÕES ==================
 function addReuniao() {
-  if (!reuniaoData.value || !reuniaoHora.value) {
-    alert("Informe data e hora");
-    return;
-  }
+  if (!reuniaoData.value || !reuniaoHora.value) return;
 
   reunioes.push({
     id: Date.now(),
@@ -120,12 +145,10 @@ function addReuniao() {
   });
 
   salvar();
-  listarReunioes();
-
-  // limpar campos
   reuniaoData.value = "";
   reuniaoHora.value = "";
   reuniaoObs.value = "";
+  listarReunioes();
 }
 
 function listarReunioes() {
@@ -141,7 +164,7 @@ function listarReunioes() {
 function calcularTotal() {
   const totalValor = projetos
     .filter(p => p.pago)
-    .reduce((soma, p) => soma + p.valor, 0);
+    .reduce((s, p) => s + p.valor, 0);
 
   total.innerText = "Total recebido: R$ " + totalValor;
 }
